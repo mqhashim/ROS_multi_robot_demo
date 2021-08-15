@@ -1,0 +1,52 @@
+<launch>
+    <!-- Definition of command line arguments passed to .launch file with := notation
+        E.g., max_robot_speed:=5 -->
+    <arg name='robot_model' default='waffle_pi'/>
+    <arg name='max_robot_speed' default='1.5'/>
+    <arg name='max_interval' default='5'/>
+    <arg name='x0' default='0.0'/>
+    <arg name='y0' default='0.0'/>
+    <arg name='z0' value='0.0'/> <!-- constant value, cannot be changed -->
+    <!-- Create the world and spawn the turtlebot3 robot -->
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_empty_world.launch">
+        <arg name='model' value='$(arg robot_model)'> </arg>
+        <arg name='x_pos' value='$(arg x0)'> </arg>
+        <arg name='y_pos' value='$(arg y0)'> </arg>
+    </include>
+    <!-- Define the global parameters that are accessed using the default namespace /
+        E.g., '/rate' -->
+
+    <param name='rate' type='int' value='1'/>
+    <param name='init_speed' type='double' value='0.0'/>
+    <param name='init_omega' type='double' value='0.0'/>
+
+    <!-- Run the random_velocity node -->
+    <node name="random_velocity" pkg='random_control' type='random_velocities.py'
+        output="screen"
+        launch-prefix='xterm -fa "Ubuntu Mono" -fs 12 -T "random_velocity" -fg black -bg lightgray -e'>
+        <!-- Defining node-local parameters that are accessed in the code using ∼
+        E.g., '∼max_speed' -->
+        <!-- Note that if the node is not executed through a launcher by using rosrun,
+        then in command line the parameter value can be passed using _
+        E.g., rosrun rnd_pkg rnd_vel _max_speed:=1.5 -->
+        <!-- In the code, ∼ indicates the private namespace of the node. -->
+        <!-- Note: the get_param() call used to read a parameter must be invoked inside
+        the scope where the node is declared by rospy.init_node('random_velocities')
+        E.g., it shall not be used inside the main() function where a class object
+        with the node is being instantiated. -->
+        <param name='max_speed' type='double' value="$(arg max_robot_speed)" />
+        <param name='max_omega' value='0.5'/>
+        <param name='max_interval' value='$(arg max_interval)'/>
+    </node>
+
+    <!-- Run the move_robot node -->
+    <node name="move_robot" pkg='random_control' type='move_robot.py' output="screen"
+     launch-prefix='xterm -fa "Ubuntu Mono" -fs 12 -T "move_robot" -fg black -bg lightgray -e'/>
+    
+    <!-- Run the pose_monitor node -->
+    <node name="pose_monitor" pkg='random_control' type='pose_monitor.py' output="screen"
+        launch-prefix='xterm -fa "Ubuntu Mono" -fs 12 -T "pose_monitor" -fg black -bg lightgray -e'>
+        <param name='robot_model_gazebo' type='str' value="$(arg robot_model)" />
+    </node>
+</launch>
+
