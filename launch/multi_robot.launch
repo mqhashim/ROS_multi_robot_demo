@@ -1,0 +1,46 @@
+<launch>
+    <arg name="world_file" default="worlds/empty.world"/>
+    <arg name="gui" default="false"/>
+
+    <arg name="one_robot_launch_file" default="one_robot_rwp.launch"/>
+    
+    <arg name="show_paths" default="false"/>
+    <arg name='bg_image' default='water_fence.jpg'/>
+
+    <!-- Launch Gazebo server/client with a world file (and no robots) -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(arg world_file)"/>
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="recording" value="false"/>
+    </include>
+
+    <!-- The n_robots_list.launch include the list of the n robots with their controllers
+    Ideally, the n_robots_list.launch can be created prior by a script, to customize
+    number and position of the robots in the simulation.
+    The current n_robots_list.launch file contains a 'redundant' number of robots, up to 10
+    The effective number of robots in the simulation can be set with the arg n_robots
+    -->
+
+    <include file="$(find random_control)/launch/n_robots_list.launch" >
+        <arg name="col_tolerance" value ="0.5"/>
+        <arg name="task_controller" value ="$(arg one_robot_launch_file)"/>
+    </include>
+
+    <!-- This is a visualization node, it shall run anyway, irrespective of the controller -->
+    <!-- <node name="show_path_and_infomap" pkg="show_path_and_infomap"
+        type="show_path_and_infomap_multirobot.py"
+        output="screen"
+        launch-prefix='xterm -fa "Ubuntu Mono" -fs 12 -T "Followed paths" -fg black -bg lightgray -e '
+        if='$(arg show_paths)'>
+            <param name='xmin' type='double' value='-10'/>
+            <param name='xmax' type='double' value='12'/>
+            <param name='ymin' type='double' value='-10'/>
+            <param name='ymax' type='double' value='12'/>
+            <param name='px_width' type='int' value='1000'/>
+            <param name='px_height' type='int' value='-1'/>
+            <param name='bg_color' type='int' value='192'/>
+            <param name='bg_image' type='str' value='$(arg bg_image)'/>
+    </node> -->
+</launch>
+

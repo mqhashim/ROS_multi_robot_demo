@@ -1,0 +1,55 @@
+<launch>
+    <!--
+        This script spawns one single robot in a gazebo world (created outside) and attaches
+        one or more controller nodes to it
+    -->
+    <arg name="robot_model" default="waffle_pi" />
+    <arg name="robot_name" default="XYZ" />
+    <arg name='id' default='1' />
+    <arg name="x0" default="0.0"/>
+    <arg name="y0" default="0.0"/>
+    <arg name="yaw0" default="0.0"/>
+    <arg name="rnd_seed" default="111"/>
+    <!-- <arg name="pkg_with_urdf_file" value="turtlebot3_description" /> -->
+    <arg name="turtlebot3_name_urdf" value="turtlebot3_$(arg robot_model)" />
+
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find
+             turtlebot3_description)/urdf/$(arg turtlebot3_name_urdf).urdf.xacro" /> 
+
+    <node name="spawn_$(arg robot_name)" pkg="gazebo_ros" type="spawn_model"
+    args="-x $(arg x0) -y $(arg y0) -Y $(arg yaw0) -unpause -urdf -param robot_description -model $(arg robot_name)"
+    respawn="false" output="screen" />
+
+    <!-- To inspect the state of a spawned model:
+    rosservice call gazebo/get_model_state '{model_name: robot1}'
+    Use set_model_state to set the state of a model (e.g., position and velocity)
+
+    rostopic echo -n 1 /gazebo/model_states
+    to get all models in gazebo with their states
+    -->
+
+    <node pkg="random_control" type="rwp.py"
+        name="rwp" output="screen"
+        launch-prefix='xterm -fa "Ubuntu Mono" -fs 12 -T "random_waypoint" -fg black -bg lightgray -e ' >
+
+        <param name='id' type='int' value='$(arg id)' />
+        <param name='robot_name' type='str' value='$(arg robot_name)'/>
+        <param name='velocity' type='double' value="0.3" />
+        <param name='max_angle' type='double' value='0.5'/>
+        <param name='xmin' type='double' value='-10'/>
+        <param name='xmax' type='double' value='10'/>
+        <param name='ymin' type='double' value='-10'/>
+        <param name='ymax' type='double' value='10'/>
+        <param name='pause_time' type='double' value='2'/>
+        <param name='max_travel_distance' type='double' value='5.0'/>
+        <param name='min_travel_distance' type='double' value='1.5'/>
+        <param name='rate' type='int' value='200'/>
+        <param name='rnd_seed' type='int' value='$(arg rnd_seed)'/>
+    </node>
+
+    <node pkg="random_control" type="sensor.py"
+        name="sensor" output="screen"
+        launch-prefix='xterm -fa "Ubuntu Mono" -fs 12 -T "random_waypoint" -fg black -bg lightgray -e ' >
+    </node>
+
+</launch>
