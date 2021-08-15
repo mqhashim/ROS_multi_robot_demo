@@ -30,7 +30,7 @@
 
     <node pkg="random_control" type="rwp.py"
         name="rwp" output="screen"
-        launch-prefix='xterm -fa "Ubuntu Mono" -fs 12 -T "random_waypoint" -fg black -bg lightgray -e ' >
+        launch-prefix='xterm -fa "Ubuntu Mono" -fs 12 -T "random_waypoint_controller" -fg black -bg lightgray -e ' >
 
         <param name='id' type='int' value='$(arg id)' />
         <param name='robot_name' type='str' value='$(arg robot_name)'/>
@@ -49,7 +49,7 @@
 
     <node pkg="random_control" type="sensor.py"
         name="sensor" output="screen"
-        launch-prefix='xterm -fa "Ubuntu Mono" -fs 12 -T "random_waypoint" -fg black -bg lightgray -e ' >
+        launch-prefix='xterm -fa "Ubuntu Mono" -fs 12 -T "random_waypoint_sensor" -fg black -bg lightgray -e ' >
     </node>
 
 </launch>

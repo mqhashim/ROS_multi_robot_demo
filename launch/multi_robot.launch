@@ -1,6 +1,6 @@
 <launch>
     <arg name="world_file" default="worlds/empty.world"/>
-    <arg name="gui" default="false"/>
+    <arg name="gui" default="true"/>
 
     <arg name="one_robot_launch_file" default="one_robot_rwp.launch"/>
     
